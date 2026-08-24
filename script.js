@@ -26,8 +26,23 @@ document.querySelectorAll('.reveal').forEach((element) => observer.observe(eleme
 document.querySelector('#lead-form').addEventListener('submit', (event) => {
   event.preventDefault();
   const form = event.currentTarget;
-  form.classList.add('sent');
-  form.querySelector('.form-status').textContent = 'תודה! הפרטים התקבלו ונחזור אליכם בהקדם.';
+  const formData = new FormData(form);
+  const name = String(formData.get('name') || '').trim();
+  const phone = String(formData.get('phone') || '').trim();
+  const project = String(formData.get('project') || '').trim();
+  const message = String(formData.get('message') || '').trim();
+
+  const whatsappMessage = [
+    'שלום, אשמח לקבל הצעת מחיר עבור עבודה.',
+    '',
+    `שם: ${name}`,
+    `טלפון: ${phone}`,
+    `סוג הפרויקט: ${project}`,
+    `פרטים: ${message || 'לא נמסרו פרטים נוספים'}`,
+  ].join('\n');
+
+  form.querySelector('.form-status').textContent = 'מעבירים אתכם לוואטסאפ להשלמת השליחה…';
+  window.location.href = `https://wa.me/972538218845?text=${encodeURIComponent(whatsappMessage)}`;
 });
 
 document.querySelector('#year').textContent = new Date().getFullYear();

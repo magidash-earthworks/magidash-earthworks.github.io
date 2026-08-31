@@ -1,5 +1,5 @@
-const menuButton = document.querySelector('.menu-button');
-const nav = document.querySelector('.main-nav');
+const menuButton = document.querySelector('.menuButton');
+const nav = document.querySelector('.nav');
 
 menuButton.addEventListener('click', () => {
   const isOpen = menuButton.getAttribute('aria-expanded') === 'true';
@@ -12,63 +12,24 @@ nav.querySelectorAll('a').forEach((link) => link.addEventListener('click', () =>
   menuButton.setAttribute('aria-expanded', 'false');
 }));
 
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-      observer.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.12 });
+const WHATSAPP_NUMBER = '972538218845';
 
-document.querySelectorAll('.reveal').forEach((element) => observer.observe(element));
-
-document.querySelector('#lead-form').addEventListener('submit', async (event) => {
+document.querySelector('#lead-form').addEventListener('submit', (event) => {
   event.preventDefault();
   const form = event.currentTarget;
-  const formData = new FormData(form);
-  const name = String(formData.get('name') || '').trim();
-  const phone = String(formData.get('phone') || '').trim();
-  const project = String(formData.get('project') || '').trim();
-  const message = String(formData.get('message') || '').trim();
-  const status = form.querySelector('.form-status');
-  const submitButton = form.querySelector('button[type="submit"]');
-
-  submitButton.disabled = true;
-  status.textContent = 'שולחים את הפרטים…';
-
-  try {
-    const response = await fetch('https://formsubmit.co/ajax/ormegadish@gmail.com', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        'שם מלא': name,
-        טלפון: phone,
-        'סוג הפרויקט': project,
-        'פרטי העבודה': message || 'לא נמסרו פרטים נוספים',
-        'עמוד מקור': window.location.href,
-        _subject: `פנייה חדשה מהאתר — ${project}`,
-        _template: 'table',
-        _captcha: 'false',
-      }),
-    });
-    const result = await response.json();
-
-    if (!response.ok || result.success === false) {
-      throw new Error(result.message || 'Form submission failed');
-    }
-
-    form.reset();
-    form.classList.add('sent');
-    status.textContent = 'תודה! הפרטים נשלחו בהצלחה ונחזור אליכם בהקדם.';
-  } catch (error) {
-    console.error('Lead submission failed', error);
-    status.textContent = 'לא הצלחנו לשלוח כרגע. אפשר לפנות אלינו ישירות בטלפון או בוואטסאפ.';
-    submitButton.disabled = false;
-  }
+  const data = new FormData(form);
+  const get = (key) => {
+    const value = data.get(key);
+    return typeof value === 'string' ? value : '';
+  };
+  const message = [
+    'שלום מגידש, אשמח לקבל הצעת מחיר.',
+    `שם: ${get('name')}`,
+    `טלפון: ${get('phone')}`,
+    `סוג עבודה: ${get('service')}`,
+    `פרטים: ${get('details') || 'לא צוינו'}`,
+  ].join('\n');
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
 });
 
 document.querySelector('#year').textContent = new Date().getFullYear();
